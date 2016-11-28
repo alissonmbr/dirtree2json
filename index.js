@@ -5,19 +5,19 @@ var FS = require('fs');
 
 var dirtree2json = module.exports = {};
 
-dirtree2json.dirTojson = function (path_, options_) {
+dirtree2json.dirTojson = function(path_, options_) {
     if (!path_) {
         throw new Error("The path cannot be empty!");
     }
 
     // check if the path_ exists
     if (!FS.existsSync(path_)) {
-    	throw new Error(path_ + ' doesn\'t exist!')
+        throw new Error(path_ + ' doesn\'t exist!')
     }
-    
+
     // Check if the path_ is a directory
     if (!FS.statSync(path_).isDirectory()) {
-    	throw new Error(path_ + ' is not a directory!')
+        throw new Error(path_ + ' is not a directory!')
     }
 
     return folderToJson(path_, options_);
