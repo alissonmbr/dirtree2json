@@ -5,6 +5,16 @@ var FS = require('fs');
 
 var dirtree2json = module.exports = {};
 
+/* Convert a @path_ to json with the fields setted in @options_
+ *
+ * path_: the absolute path of the folder
+ * options_: flags that enable and diable options. The options are:
+ *              includeAbsolutePath: include the absolute path to the json. Default is false
+ *              includeSize: include the size(bytes) of the files and folders. Default is false
+ *              includeCreationTime: include the creation time of the file. Default is false
+ *              includeModificationTime: include the last modification time. Default is false
+ * return: a json with the representation of the folder
+ */
 dirtree2json.dirTojson = function(path_, options_) {
     if (!path_) {
         throw new Error("The path cannot be empty!");
@@ -23,23 +33,59 @@ dirtree2json.dirTojson = function(path_, options_) {
     return folderToJson(path_, options_);
 }
 
+/* Convert @v value to boolean
+ * 
+ * v: the value to convert
+ * return a boolean value from v. Return false if @v is not boolean or is not a "true" string 
+ */
+function convertToBoolean(v) {
+    if (typeof v === "boolean") {
+        return v;
+    } else if (typeof v === "string" && v.toLowerCase() === "true") {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+/* Given a @path_ return the file structure repesentation with the fields setted in @options_
+ *
+ * path_: the same of the dirTojson function
+ * options_: the same of the dirTojson function
+ * return: a json with the representation of the folder
+ */
 function folderToJson(path_, options_) {
     // Check options and set default values if empty
     var options = options_ || {};
-    options.includeAbsolutePath = typeof options.includeAbsolutePath === 'undefined' ? true : options.includeAbsolutePath;
+    options.includeAbsolutePath = convertToBoolean(options.includeAbsolutePath);
+    options.includeSize = convertToBoolean(options.includeSize);
+    options.includeCreationTime = convertToBoolean(options.includeCreationTime);
+    options.includeModificationTime = convertToBoolean(options.includeModificationTime);
 
     var folder = {};
+    var stat = FS.statSync(path_);
 
     if (options.includeAbsolutePath) {
         folder.absolutePath = path_;
     }
 
+    if (options.includeCreationTime) {
+        folder.creationTime = stat.birthtime;
+    }
+
+    if (options.includeModificationTime) {
+        folder.modificationTime = stat.mtime;
+    }
+
     folder.path = PATH.basename(path_);
     folder.name = PATH.basename(path_);
     folder.ext = PATH.extname(path_);
-    folder.isDir = !!FS.statSync(path_).isDirectory();
+    folder.isDir = !!stat.isDirectory();
     folder.child = listFolder(path_, PATH.basename(path_), options);
-    folder.size = getSize(folder.child);
+
+    if (options.includeSize) {
+        folder.size = getSize(folder.child);
+    }
 
     return folder;
 }
@@ -55,24 +101,37 @@ function listFolder(path_, basePath_, options_) {
     for (var i = 0; i < files.length; ++i) {
         var node = {};
         var path = path_ + '/' + files[i];
+        var stat = FS.statSync(path);
 
         if (options_.includeAbsolutePath) {
             node.absolutePath = path;
         }
 
+        if (options_.includeCreationTime) {
+            node.creationTime = stat.birthtime;
+        }
+
+        if (options_.includeModificationTime) {
+            node.modificationTime = stat.mtime;
+        }
+
         node.path = basePath_ + '/' + files[i];
 
         node.name = files[i];
-        node.ext = PATH.extname(path);
+        node.ext = PATH.extname(path).replace('.', '');
 
-        if (FS.statSync(path).isDirectory()) {
+        if (stat.isDirectory()) {
             node.isDir = true;
             node.child = listFolder(path, node.path, options_);
-            node.size = getSize(node.child);
+            if (options_.includeSize) {
+                node.size = getSize(node.child);
+            }
             foldersArray.push(node);
         } else {
             node.isDir = false;
-            node.size = FS.statSync(path).size;
+            if (options_.includeSize) {
+                node.size = stat.size;
+            }
             filesArray.push(node);
         }
 
@@ -84,6 +143,11 @@ function listFolder(path_, basePath_, options_) {
     return nodes;
 }
 
+/* Get the size of the folder
+ *
+ * child: the list of childrens of the folder
+ * return: the size(bytes) of the sum of all childrens  
+ */
 function getSize(child) {
     var size = 0;
 
