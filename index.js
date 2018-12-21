@@ -13,6 +13,8 @@ var dirtree2json = module.exports = {};
  *              includeSize: include the size(bytes) of the files and folders. Default is false
  *              includeCreationTime: include the creation time of the file. Default is false
  *              includeModificationTime: include the last modification time. Default is false
+ *              attributeName: override the attribute names, the attributes name are: path, child, 
+ *                  absolutePath, fileName, extension, dirFlag, creationTime, modificationTime, size
  * return: a json with the representation of the folder
  */
 dirtree2json.dirTojson = function(path_, options_) {
@@ -57,34 +59,45 @@ function convertToBoolean(v) {
 function folderToJson(path_, options_) {
     // Check options and set default values if empty
     var options = options_ || {};
+    options.attributeName =  options.attributeName || {};
     options.includeAbsolutePath = convertToBoolean(options.includeAbsolutePath);
     options.includeSize = convertToBoolean(options.includeSize);
     options.includeCreationTime = convertToBoolean(options.includeCreationTime);
     options.includeModificationTime = convertToBoolean(options.includeModificationTime);
+    
+    options.attributeName.path = options.attributeName.path || "path";
+    options.attributeName.child = options.attributeName.child || "child";
+    options.attributeName.absolutePath = options.attributeName.absolutePath || "absolutePath";
+    options.attributeName.fileName = options.attributeName.fileName || "name";
+    options.attributeName.extension = options.attributeName.extension || "ext";
+    options.attributeName.dirFlag = options.attributeName.dirFlag || "isDir";
+    options.attributeName.creationTime = options.attributeName.creationTime || "creationTime";
+    options.attributeName.modificationTime = options.attributeName.modificationTime || "modificationTime";
+    options.attributeName.size = options.attributeName.size || "size";
 
     var folder = {};
     var stat = FS.statSync(path_);
 
     if (options.includeAbsolutePath) {
-        folder.absolutePath = path_;
+        folder[options.attributeName.absolutePath] = path_;
     }
 
     if (options.includeCreationTime) {
-        folder.creationTime = stat.birthtime;
+        folder[options.attributeName.creationTime] = stat.birthtime;
     }
 
     if (options.includeModificationTime) {
-        folder.modificationTime = stat.mtime;
+        folder[options.attributeName.modificationTime] = stat.mtime;
     }
 
-    folder.path = PATH.basename(path_);
-    folder.name = PATH.basename(path_);
-    folder.ext = PATH.extname(path_);
-    folder.isDir = !!stat.isDirectory();
-    folder.child = listFolder(path_, PATH.basename(path_), options);
+    folder[options.attributeName.path] = PATH.basename(path_);
+    folder[options.attributeName.fileName] = PATH.basename(path_);
+    folder[options.attributeName.extension] = PATH.extname(path_);
+    folder[options.attributeName.dirFlag] = !!stat.isDirectory();
+    folder[options.attributeName.child] = listFolder(path_, PATH.basename(path_), options);
 
     if (options.includeSize) {
-        folder.size = getSize(folder.child);
+        folder[options.attributeName.size] = getSize(folder[options.attributeName.child], options.attributeName.size);
     }
 
     return folder;
@@ -104,33 +117,33 @@ function listFolder(path_, basePath_, options_) {
         var stat = FS.statSync(path);
 
         if (options_.includeAbsolutePath) {
-            node.absolutePath = path;
+            node[options_.attributeName.absolutePath] = path;
         }
 
         if (options_.includeCreationTime) {
-            node.creationTime = stat.birthtime;
+            node[options_.attributeName.creationTime] = stat.birthtime;
         }
 
         if (options_.includeModificationTime) {
-            node.modificationTime = stat.mtime;
+            node[options_.attributeName.modificationTime] = stat.mtime;
         }
 
-        node.path = basePath_ + '/' + files[i];
+        node[options_.attributeName.path] = basePath_ + '/' + files[i];
 
-        node.name = files[i];
-        node.ext = PATH.extname(path).replace('.', '');
+        node[options_.attributeName.fileName] = files[i];
+        node[options_.attributeName.extension] = PATH.extname(path).replace('.', '');
 
         if (stat.isDirectory()) {
-            node.isDir = true;
-            node.child = listFolder(path, node.path, options_);
+            node[options_.attributeName.dirFlag] = true;
+            node[options_.attributeName.child] = listFolder(path, node[options_.attributeName.path], options_);
             if (options_.includeSize) {
-                node.size = getSize(node.child);
+                node[options_.attributeName.size] = getSize(node[options_.attributeName.child], options_.attributeName.size);
             }
             foldersArray.push(node);
         } else {
-            node.isDir = false;
+            node[options_.attributeName.dirFlag] = false;
             if (options_.includeSize) {
-                node.size = stat.size;
+                node[options_.attributeName.size] = stat.size;
             }
             filesArray.push(node);
         }
@@ -148,11 +161,11 @@ function listFolder(path_, basePath_, options_) {
  * child: the list of childrens of the folder
  * return: the size(bytes) of the sum of all childrens  
  */
-function getSize(child) {
+function getSize(child, sizeName) {
     var size = 0;
 
     for (var j = 0; j < child.length; ++j)
-        size += child[j].size;
+        size += child[j][sizeName];
 
     return size;
 }
