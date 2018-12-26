@@ -29,6 +29,10 @@ console.log(
             includeExtension: false,
             rootPath: ".",
             rootName: "root",
+            filter: {
+                fileExtension: /html/i
+            },
+            excludeEmptyFolders: true,
             attributeName: {
                 "absolutePath": "absolutePath2",
                 "creationTime": "creationTime2",
