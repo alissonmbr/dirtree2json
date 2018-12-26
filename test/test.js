@@ -1,4 +1,4 @@
-var dirtree = require('../');
+var dirtree = require('../lib');
 
 console.log(
     JSON.stringify(
@@ -7,6 +7,10 @@ console.log(
             includeSize: true,
             includeCreationTime: true,
             includeModificationTime: true,
+            filter: {
+                folderName: /dir1/i,
+                fileExtension: /css|js/i
+            },
             attributeName: {
                 "absolutePath": "absolutePath2",
                 "creationTime": "creationTime2",

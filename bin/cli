@@ -1,0 +1,47 @@
+#!/usr/bin/env node
+
+var dirtree = require('../lib');
+var argv = process.argv.slice(2);
+
+function printHelp() {
+    var helpText = "Usage: dirtree2json src dest ";
+    // TODO - help text
+    console.log("print help");
+
+}
+
+if (argv.length === 0 || (argv.length === 1 && argv[0] === "--help")) {
+    printHelp();
+    process.exit(0);
+}
+
+
+
+
+console.log(
+    JSON.stringify(
+        dirtree.dirTojson(argv[0], {
+            includeAbsolutePath: false,
+            includeSize: false,
+            includeCreationTime: false,
+            includeModificationTime: false,
+            includeDirFlag: false,
+            includeExtension: false,
+            rootPath: ".",
+            rootName: "root",
+            attributeName: {
+                "absolutePath": "absolutePath2",
+                "creationTime": "creationTime2",
+                "modificationTime": "modificationTime2",
+                "path": "path",
+                "fileName": "name",
+                "extension": "ext2",
+                "dirFlag": "isDir2",
+                "size": "size2",
+                "child": "children"
+            }
+        }),
+        null,
+        2
+    )
+);
