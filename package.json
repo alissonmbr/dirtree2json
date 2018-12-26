@@ -4,7 +4,7 @@
   "description": "Transform a directory in json with some informations",
   "main": "index.js",
   "scripts": {
-    "test": "node test/test.js"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -22,5 +22,8 @@
     "url": "https://github.com/alissonmbr/dirtree2json/issues"
   },
   "homepage": "https://github.com/alissonmbr/dirtree2json#readme",
-  "bin": "bin/cli"
+  "bin": "bin/cli",
+  "devDependencies": {
+    "mocha": "^5.2.0"
+  }
 }
