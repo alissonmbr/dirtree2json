@@ -1,5 +1,5 @@
 var commandLineUsage = require('command-line-usage');
-var a = { "a": 1, b: 2 };
+
 var jsonOptions =
     "{bold attributeName.absolutePath} (string) overwrites the name of the 'absolute path' attribute. Default is: \"absolutePath\"\n" +
     "{bold attributeName.child} (string) overwrites the name of the 'children' attribute. Default is:  \"child\"\n" +
