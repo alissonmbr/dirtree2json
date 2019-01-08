@@ -22,9 +22,47 @@ function fileNameChecker(node, regex) {
     return node.isDir || !node.isDir && node.name.search(regex) > -1;
 }
 
+function folderNameChecker(node, regex) {
+    return !node.isDir || node.name === "testDir" || node.isDir && node.name.search(regex) > -1;
+}
+
 function emptyFolderChecker(node) {
     return !node.isDir || node.isDir && node.child.length > 0;
 }
+
+describe('path', function() {
+    describe('empty path', function() {
+        it('should throw an exception', function() {
+            try {
+                dirtree.dirTojson("");
+            } catch (err) {
+                assert.strictEqual(err.message, "The path cannot be empty!");
+            }
+        });
+    });
+
+    describe('wrong path', function() {
+        it('should throw an exception', function() {
+            var path = __dirname + '/testDir2';
+            try {
+                dirtree.dirTojson(path);
+            } catch (err) {
+                assert.strictEqual(err.message, path + ' doesn\'t exist!');
+            }
+        });
+    });
+
+    describe('path is not a directory', function() {
+        it('should throw an exception', function() {
+            var path = __dirname + '/testDir/file1.txt';
+            try {
+                dirtree.dirTojson(path);
+            } catch (err) {
+                assert.strictEqual(err.message, path + ' is not a directory!');
+            }
+        });
+    });
+});
 
 describe('options', function () {
     describe('default options', function () {
@@ -36,7 +74,7 @@ describe('options', function () {
     describe('include/exclude options', function () {
         describe('includeAbsolutePath', function () {
             it('should include', function () {
-                assert.ok(!!dirtree.dirTojson(__dirname + '/testDir', { includeAbsolutePath: true }).absolutePath);
+                assert.ok(!!dirtree.dirTojson(__dirname + '/testDir', { includeAbsolutePath: "true" }).absolutePath);
             });
             it('should exclude', function () {
                 assert.ok(!dirtree.dirTojson(__dirname + '/testDir', { includeAbsolutePath: false }).absolutePath);
@@ -168,6 +206,11 @@ describe('options', function () {
         it('should list just files with the name "/file.*/"', function () {
             assert.ok(walk(dirtree.dirTojson(__dirname + '/testDir', { filter: { fileName: /^file.*$/ } }), fileNameChecker, /^file.*$/));
             assert.ok(!walk(dirtree.dirTojson(__dirname + '/testDir', { filter: { fileName: /^css.*$/ } }), fileNameChecker, /^file.*$/));
+        });
+
+        it('should list just folders with the name "dir1"', function () {
+            assert.ok(walk(dirtree.dirTojson(__dirname + '/testDir', { filter: { folderName: /^dir1$/ } }), folderNameChecker, /^dir1$/));
+            assert.ok(!walk(dirtree.dirTojson(__dirname + '/testDir', { filter: { folderName: /^dir2$/ } }), folderNameChecker, /^dir1$/));
         });
     });
 
