@@ -27,7 +27,6 @@
     "mocha": "^5.2.0"
   },
   "dependencies": {
-    "args": "^5.0.0",
     "command-line-args": "^5.0.2",
     "command-line-usage": "^5.0.5"
   }
