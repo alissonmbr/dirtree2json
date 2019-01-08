@@ -1,6 +1,6 @@
 {
   "name": "dirtree2json",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Transform a directory into a json",
   "main": "index.js",
   "scripts": {
