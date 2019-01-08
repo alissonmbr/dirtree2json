@@ -17,15 +17,15 @@ var result = dirtree2json.dirTojson(path [,options]);
 
 | Option | Type | Default | Description |
 |------|:----:|:-------:|-----------|
-|attributeName.absolutePath | string | "absolutePath" | override the 'absolute path' attribute name|
-|attributeName.child | string | "child" | override the 'children' attribute name|
-|attributeName.creationTime | string | "creationTime" | override the 'creation time' attribute name|
-|attributeName.dirFlag | string | "isDir" | override the 'is directory flag' attribute name|
-|attributeName.extension | string | "ext" | override the 'extension' attribute name|
-|attributeName.fileName | string | "name" | override the 'file name' attribute name|
-|attributeName.modificationTime | string | "modificationTime" | override the 'modification time' attribute name|
-|attributeName.path | string | "path" | override the 'path' attribute name|
-|attributeName.size | string | "size" | override the 'size' attribute name|
+|attributeName.absolutePath | string | "absolutePath" | overwrites the name of the 'absolute path' attribute|
+|attributeName.child | string | "child" | overwrites the name of the 'children' attribute|
+|attributeName.creationTime | string | "creationTime" | overwrites the name of the 'creation time' attribute|
+|attributeName.dirFlag | string | "isDir" | overwrites the name of the 'is directory flag' attribute|
+|attributeName.extension | string | "ext" | overwrites the name of the 'extension' attribute|
+|attributeName.fileName | string | "name" | overwrites the name of the 'file name' attribute|
+|attributeName.modificationTime | string | "modificationTime" | overwrites the name of the 'modification time' attribute|
+|attributeName.path | string | "path" | overwrites the name of the 'path' attribute|
+|attributeName.size | string | "size" | overwrites the name of the 'size' attribute|
 |excludeEmptyFolders | boolean | false | exclude all folders without a file. This is also excludes folders with just empty folders|
 |filter.fileExtension | regex or string | null | filter files by file extension name|
 |filter.fileName | regex or string | null | filter files by name|
@@ -36,8 +36,8 @@ var result = dirtree2json.dirTojson(path [,options]);
 |includeExtension | boolean | true | include the extension of the file|
 |includeModificationTime | boolean | false | include the modification time of the folder/file|
 |includeSize | boolean | false | include the size of the folder/file|
-|rootName | string | name of the relative path | override the name of the root folder|
-|rootPath | string | relative path of the folder | override the path attribute of the root|
+|rootName | string | name of the relative path | overwrites the name of the root folder|
+|rootPath | string | relative path of the folder | overwrites the path attribute of the  the root|
 
 ## Examples
 All examples use this folder structure

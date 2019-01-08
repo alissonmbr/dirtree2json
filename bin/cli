@@ -1,51 +1,45 @@
 #!/usr/bin/env node
-
+var commandLineArgs = require('command-line-args');
 var dirtree = require('../lib');
-var argv = process.argv.slice(2);
+var help = require('./help')();
 
-function printHelp() {
-    var helpText = "Usage: dirtree2json src dest ";
-    // TODO - help text
-    console.log("print help");
+var dirtreeOptions = null;
+var optionDefinitions = [
+    { name: 'path', defaultOption: true },
+    { name: 'prettify', alias: 'p', type: Boolean, defaultValue: false },
+    { name: 'json', alias: 'j', type: String, defaultValue: null },
+    { name: 'help', alias: 'h', type: Boolean, defaultValue: false },
+];
 
+var options = null; 
+try {
+    options = commandLineArgs(optionDefinitions);
+} catch (error) {
+    console.log("\n" + error.message);
+    console.log(help);
+    process.exit(1);
 }
 
-if (argv.length === 0 || (argv.length === 1 && argv[0] === "--help")) {
-    printHelp();
+if (options.help) {
+    console.log(help);
     process.exit(0);
 }
 
+if (options.json) {
+    try {
+        var fs = require('fs');
+        dirtreeOptions = JSON.parse(fs.readFileSync(options.json, 'utf8'));
+    } catch (err) {
+        console.log("Was not possible to parse the json file '" + flags.json + "': " + err.message);
+        process.exit(1);
+    }
+}
 
+if (!options.path) {
+    console.log("\n  The <directory-path> argument is mandatory!\n");
+    console.log(help);
+    process.exit(1);
+}
 
-
-console.log(
-    JSON.stringify(
-        dirtree.dirTojson(argv[0], {
-            includeAbsolutePath: false,
-            includeSize: false,
-            includeCreationTime: false,
-            includeModificationTime: false,
-            includeDirFlag: false,
-            includeExtension: false,
-            rootPath: ".",
-            rootName: "root",
-            filter: {
-                fileExtension: /html/i
-            },
-            excludeEmptyFolders: true,
-            attributeName: {
-                "absolutePath": "absolutePath2",
-                "creationTime": "creationTime2",
-                "modificationTime": "modificationTime2",
-                "path": "path",
-                "fileName": "name",
-                "extension": "ext2",
-                "dirFlag": "isDir2",
-                "size": "size2",
-                "child": "children"
-            }
-        }),
-        null,
-        2
-    )
-);
+var result = dirtree.dirTojson(options.path, dirtreeOptions);
+console.log(options.prettify ? JSON.stringify(result, null, 2) : JSON.stringify(result));
