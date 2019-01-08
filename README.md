@@ -1,15 +1,16 @@
 # dirtree2json
-dirtree2json converts a directory in a json.
+Simple, flexible lib to convert a directory tree into a json.
 
 # Installation
 ```
-npm install dirtree2json
+npm install dirtree2json --save
 ```
 
 # API
 ## Usage
 ``` javascript
-dirtree2json.dirTojson(path [,options])
+var dirtree2json = require('dirtree2json');
+var result = dirtree2json.dirTojson(path [,options]);
 ```
 
 ## Options
@@ -268,3 +269,4 @@ Result:
 
 ```
 
+# CLI
