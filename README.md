@@ -270,3 +270,14 @@ Result:
 ```
 
 # CLI
+## Install
+npm install -g dirtree2json
+## Usage
+dirtree2json [options] <directory-path>
+
+```
+Options
+  -h, --help        Print this usage guide
+  -p, --prettify    Enable json pretty print
+  -j, --json file   Json file with dirtree2json configuration. The configuration json is the same of the API
+```
